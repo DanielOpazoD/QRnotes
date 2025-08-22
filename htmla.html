@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recordatorio</title>
+  <style>
+    body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:24px; line-height:1.45; }
+    h1{ font-size:22px; margin:0 0 8px }
+    .meta{ margin: 0 0 14px; color:#333; font-size:15px }
+    .meta b{ display:inline-block; width:140px }
+    ol{ padding-left:22px; margin: 8px 0 }
+    li{ margin:4px 0 }
+    .actions{ margin-top:16px }
+    button{ font-size:14px; padding:8px 12px; border:1px solid #ccc; border-radius:10px; background:#f6f7f9; cursor:pointer }
+    @media print {
+      .actions { display:none; }      /* Ocultar botones al imprimir */
+      body { margin: 10mm; }          /* Márgenes cómodos para PDF */
+    }
+  </style>
+</head>
+<body>
+  <h1 id="title">Recordatorio de indicación de fármacos</h1>
+  <div class="meta">
+    <div><b>Nombre y Apellido:</b> <span id="name">—</span></div>
+    <div><b>RUT:</b> <span id="rut">—</span></div>
+    <div><b>Fecha:</b> <span id="fecha">—</span></div>
+  </div>
+
+  <ol id="meds"></ol>
+
+  <div class="actions">
+    <button onclick="window.print()">Imprimir / Guardar PDF</button>
+  </div>
+
+  <script>
+    // Lee parámetros desde ?query o #hash: title, name, rut, fecha, meds
+    const params = new URLSearchParams(location.search);
+    function getParam(key){
+      let v = params.get(key);
+      if (v) return v;
+      const h = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+      if (!h) return null;
+      const ps = new URLSearchParams(h);
+      return ps.get(key);
+    }
+
+    const title = getParam('title') || 'Recordatorio de indicación de fármacos';
+    const name  = getParam('name')  || '';
+    const rut   = getParam('rut')   || '';
+    const fecha = getParam('fecha') || '';
+    const medsRaw = getParam('meds') || '';
+
+    // Separador de ítems: "||"
+    const items = medsRaw.split('||').map(s => s.trim()).filter(Boolean);
+
+    // Render
+    document.title = title;
+    document.getElementById('title').textContent = title;
+    document.getElementById('name').textContent  = name || '—';
+    document.getElementById('rut').textContent   = rut  || '—';
+    document.getElementById('fecha').textContent = fecha|| '—';
+
+    const list = document.getElementById('meds');
+    if (items.length){
+      items.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        list.appendChild(li);
+      });
+    } else {
+      const li = document.createElement('li');
+      li.textContent = 'Sin medicamentos';
+      list.appendChild(li);
+    }
+  </script>
+</body>
+</html>
