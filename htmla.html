@@ -73,7 +73,19 @@
     const params = new URLSearchParams(window.location.search);
     document.getElementById("nombre").textContent = params.get("nombre") || "—";
     document.getElementById("rut").textContent = params.get("rut") || "—";
-    document.getElementById("fecha").textContent = params.get("fecha") || "—";
+
+    const fechaParam = params.get("fecha");
+    let fechaMostrada = "—";
+    if (fechaParam) {
+      const partes = fechaParam.replace(/\//g, "-").split("-");
+      if (partes.length === 3) {
+        const [mes, dia, anio] = partes;
+        fechaMostrada = `${dia.padStart(2, "0")}-${mes.padStart(2, "0")}-${anio}`;
+      } else {
+        fechaMostrada = fechaParam;
+      }
+    }
+    document.getElementById("fecha").textContent = fechaMostrada;
 
     const meds = params.get("meds")?.split("||") || [];
     const lista = document.getElementById("listaMedicamentos");
